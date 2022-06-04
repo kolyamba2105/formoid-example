@@ -11,7 +11,7 @@
   "dependencies": {
     "@radix-ui/react-tooltip": "^0.1.7",
     "classnames": "^2.3.1",
-    "formoid": "^1.0.10",
+    "formoid": "latest",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "^5.0.1"

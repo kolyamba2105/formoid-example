@@ -4753,10 +4753,10 @@ formats@1.0.0:
   resolved "https://registry.yarnpkg.com/formats/-/formats-1.0.0.tgz#327154084786eac09d3b839cab28d150b982b163"
   integrity sha512-For0Y8egwEK96JgJo4NONErPhtl7H2QzeB2NYGmzeGeJ8a1JZqPgLYOtM3oJRCYhmgsdDFd6KGRYyfe37XY4Yg==
 
-formoid@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/formoid/-/formoid-1.0.10.tgz#3ef374ce06ba8296001de3c3143fe66dc0537f30"
-  integrity sha512-AxKKKK7L3qoP9jhmbGEuFBudCVT7Q4T7dTgar7jiyFvXQNobhRQ8QmeTp29NootsMVzWn8XW7cGdEsHY/gLXcg==
+formoid@latest:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/formoid/-/formoid-1.0.11.tgz#9e61f803e8ac3b8aa099223e11e34a200d532511"
+  integrity sha512-bfe4HWwLaCuyrh81oQZUPJ27nzF9jBMC3ukE24Q6iaSL7Ni2UqhK4DyuPY024ZfCkFyKG+nCnK8vWuvIOZycqw==
 
 forwarded@0.2.0:
   version "0.2.0"

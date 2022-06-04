@@ -74,7 +74,7 @@ export const TextField = ({
       <Tooltip.Content className={css.error} side="top">
         <div className="flex flex-col gap-2">
           {errors?.map((error, key) => (
-            <span key={key}>{error.message}</span>
+            <span key={key}>{error}</span>
           ))}
         </div>
         <Tooltip.Arrow className="fill-red-400" />

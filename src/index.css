@@ -10,12 +10,8 @@ body,
   height: 100%;
 }
 
-body {
-  font-family: "JetBrains Mono", monospace;
-}
-
 #root {
-  background-color: theme("colors.zinc.800");
+  background-color: theme("colors.zinc.100");
 }
 
 * {

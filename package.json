@@ -1,5 +1,5 @@
 {
-  "name": "webpack-template",
+  "name": "formoid-example",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
@@ -9,6 +9,8 @@
     "start": "REACT_APP_ENV=development webpack serve"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.0.2",
+    "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

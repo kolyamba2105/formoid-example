@@ -1,3 +1,6 @@
-# Webpack Template
+# Formoid demo app
 
-Webpack template for React, TypeScript, CSS/SCSS Modules and Tailwind CSS. Also includes ESLint and Prettier integrations.
+## Development setup
+
+- Run `yarn link` from root folder
+- Run `yarn link formoid` in this folder

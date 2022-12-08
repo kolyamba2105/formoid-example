@@ -151,7 +151,9 @@ const config: webpack.Configuration = {
       : null,
   ]),
   resolve: {
+    alias: { "~": path.resolve(__dirname, "src") },
     extensions: [".tsx", ".ts", ".js"],
+    symlinks: false,
   },
   /**
    * Control what bundle information gets displayed

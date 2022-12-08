@@ -1,6 +1,7 @@
 module.exports = {
   extends: ["plugin:prettier/recommended"],
   plugins: ["prettier"],
+  root: true,
   rules: {
     "prettier/prettier": "warn",
   },

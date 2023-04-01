@@ -44,7 +44,11 @@ function App() {
     }),
   });
 
-  const submit = () => handleSubmit((values) => saveData(values));
+  const submit = () =>
+    handleSubmit({
+      onSuccess: (values) => saveData(values),
+      onFailure: () => alert("Something bad happened..."),
+    });
 
   return (
     <div className="h-full w-full p-4">

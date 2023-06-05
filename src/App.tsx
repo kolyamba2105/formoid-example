@@ -1,5 +1,5 @@
 import { Button, TextField } from "~/common/components";
-import { customValidator } from "~/common/utils";
+import { customValidator, pipe } from "~/common/utils";
 import { useForm, validator } from "formoid";
 
 function saveData(data: unknown) {
@@ -20,13 +20,16 @@ function App() {
     password: "",
     confirmPassword: "",
   };
-  const { fieldProps, handleReset, handleSubmit } = useForm({
+  const { fieldProps, handleReset, handleSubmit, values } = useForm({
     initialValues,
     validationStrategy: "onBlur",
     validators: ({ password }) => ({
-      name: validator.sequence(
+      name: pipe(
         customValidator.nonEmptyString(),
-        validator.lengthRange(4, 64, "User name length must be between 8 and 64 chars!"),
+        validator.transform((value) => value.trim()),
+        validator.chain(
+          validator.lengthRange(4, 64, "User name length must be between 8 and 64 chars!"),
+        ),
       ),
       password: validator.sequence(
         customValidator.nonEmptyString(),
@@ -47,7 +50,7 @@ function App() {
   const submit = () =>
     handleSubmit({
       onSuccess: (values) => saveData(values),
-      onFailure: () => alert("Something bad happened..."),
+      onFailure: () => console.log(values),
     });
 
   return (

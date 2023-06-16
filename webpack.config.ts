@@ -2,25 +2,25 @@ import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import CssMinimizerWebpackPlugin from "css-minimizer-webpack-plugin";
-import EslintWebpackPlugin from "eslint-webpack-plugin";
+import EsLintWebpackPlugin from "eslint-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import * as path from "path";
 import ReactRefreshTypeScript from "react-refresh-typescript";
-import * as webpack from "webpack";
+import { Configuration, RuleSetUse } from "webpack";
 import "webpack-dev-server";
 
-type Env = "development" | "production";
+const modes = ["development", "production"] as const;
 
-function isEnv(value: string): value is Env {
-  return value === "development" || value === "production";
+type Mode = (typeof modes)[number];
+
+function isValidMode(value: string): value is Mode {
+  return (modes as ReadonlyArray<string>).includes(value);
 }
 
-const env =
-  process.env.REACT_APP_ENV && isEnv(process.env.REACT_APP_ENV)
-    ? process.env.REACT_APP_ENV
-    : "production";
+const mode =
+  process.env.NODE_ENV && isValidMode(process.env.NODE_ENV) ? process.env.NODE_ENV : "production";
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined;
@@ -33,8 +33,8 @@ function compact<T>(values: Array<T>): Array<NonNullable<T>> {
 /**
  * style-loader must be fist in the list
  */
-const cssLoaders: webpack.RuleSetUse = [
-  env === "production" ? MiniCssExtractPlugin.loader : "style-loader",
+const cssLoaders: RuleSetUse = [
+  mode === "production" ? MiniCssExtractPlugin.loader : "style-loader",
   "css-loader",
   {
     loader: "postcss-loader",
@@ -46,8 +46,8 @@ const cssLoaders: webpack.RuleSetUse = [
   },
 ];
 
-const config: webpack.Configuration = {
-  mode: env,
+export default {
+  mode,
   entry: {
     bundle: path.resolve(__dirname, "src/index.tsx"),
   },
@@ -72,7 +72,7 @@ const config: webpack.Configuration = {
       directory: path.resolve(__dirname, "build"),
     },
   },
-  devtool: env === "development" ? "source-map" : false,
+  devtool: mode === "development" ? "source-map" : false,
   module: {
     rules: [
       {
@@ -93,9 +93,9 @@ const config: webpack.Configuration = {
         use: {
           loader: "ts-loader",
           options: {
-            transpileOnly: env === "development",
+            transpileOnly: mode === "development",
             getCustomTransformers: () => ({
-              before: compact([env === "development" ? ReactRefreshTypeScript() : null]),
+              before: compact([mode === "development" ? ReactRefreshTypeScript() : null]),
             }),
           },
         },
@@ -103,7 +103,7 @@ const config: webpack.Configuration = {
     ],
   },
   optimization: {
-    minimize: env === "production",
+    minimize: mode === "production",
     minimizer: [new CssMinimizerWebpackPlugin(), "..."],
     /**
      * TODO understand what's going on here :)
@@ -126,9 +126,9 @@ const config: webpack.Configuration = {
       filename: "index.html",
       template: "public/index.html",
     }),
-    env === "production" ? new CleanWebpackPlugin() : null,
-    env === "production" ? new MiniCssExtractPlugin() : null,
-    env === "production"
+    mode === "production" ? new CleanWebpackPlugin() : null,
+    mode === "production" ? new MiniCssExtractPlugin() : null,
+    mode === "production"
       ? new CopyWebpackPlugin({
           patterns: [
             {
@@ -144,10 +144,10 @@ const config: webpack.Configuration = {
     /**
      * Output TS errors in the console
      */
-    env === "development" ? new ForkTsCheckerWebpackPlugin() : null,
-    env === "development" ? new ReactRefreshWebpackPlugin({ overlay: true }) : null,
-    env === "development"
-      ? new EslintWebpackPlugin({ extensions: ["ts", "tsx"], failOnError: false, files: "./src" })
+    mode === "development" ? new ForkTsCheckerWebpackPlugin() : null,
+    mode === "development" ? new ReactRefreshWebpackPlugin({ overlay: true }) : null,
+    mode === "development"
+      ? new EsLintWebpackPlugin({ extensions: ["ts", "tsx"], failOnError: false, files: "./src" })
       : null,
   ]),
   resolve: {
@@ -156,7 +156,7 @@ const config: webpack.Configuration = {
     },
     extensions: [".tsx", ".ts", ".js"],
     modules: [path.resolve("./node_modules")],
-    symlinks: env === "development",
+    symlinks: mode === "development",
   },
   /**
    * Control what bundle information gets displayed
@@ -164,6 +164,4 @@ const config: webpack.Configuration = {
   stats: {
     preset: "errors-warnings",
   },
-};
-
-export default config;
+} satisfies Configuration;

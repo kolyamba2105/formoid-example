@@ -5,14 +5,10 @@ import { ChangeEvent, FocusEvent, InputHTMLAttributes, MouseEvent, useState } fr
 import { Overwrite } from "~/common/utils";
 import css from "./TextField.module.scss";
 
-type DefaultProps = InputHTMLAttributes<HTMLInputElement>;
-
-type InputSize = "sm" | "md" | "lg";
-
-type CustomProps = FieldProps<string> &
-  Partial<{ size: InputSize; type: "email" | "password" | "text" }>;
-
-type Props = Overwrite<DefaultProps, CustomProps>;
+type Props = Overwrite<
+  InputHTMLAttributes<HTMLInputElement>,
+  FieldProps<string> & Partial<{ size: "sm" | "md" | "lg"; type: "email" | "password" | "text" }>
+>;
 
 export const TextField = ({
   className,
@@ -20,43 +16,36 @@ export const TextField = ({
   onBlur,
   onChange,
   size = "md",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   touched,
   ...props
 }: Props) => {
   const hasErrors = errors !== null;
   const [showError, setShowError] = useState(hasErrors);
 
-  const handleBlur = (): void => {
+  const handleBlur = () => {
     onBlur();
     hasErrors && setShowError(false);
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange(event.currentTarget.value);
   };
 
-  const handleFocus = (event: FocusEvent<HTMLInputElement>): void => {
-    props.onFocus && props.onFocus(event);
+  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    props.onFocus?.(event);
     hasErrors && setShowError(true);
   };
 
-  const handleMouseEnter = (event: MouseEvent<HTMLInputElement>): void => {
-    props.onMouseEnter && props.onMouseEnter(event);
+  const handleMouseEnter = (event: MouseEvent<HTMLInputElement>) => {
+    props.onMouseEnter?.(event);
     hasErrors && setShowError(true);
   };
 
-  const handleMouseLeave = (event: MouseEvent<HTMLInputElement>): void => {
-    props.onMouseLeave && props.onMouseLeave(event);
+  const handleMouseLeave = (event: MouseEvent<HTMLInputElement>) => {
+    props.onMouseLeave?.(event);
     hasErrors && setShowError(false);
   };
-
-  const styles = cx(
-    css.input,
-    css[size],
-    props.readOnly && css.readOnly,
-    hasErrors && css.invalid,
-    className,
-  );
 
   return (
     <Tooltip.Provider>
@@ -64,7 +53,13 @@ export const TextField = ({
         <Tooltip.Trigger asChild>
           <input
             {...props}
-            className={styles}
+            className={cx(
+              css.input,
+              css[size],
+              props.readOnly && css.readOnly,
+              hasErrors && css.invalid,
+              className,
+            )}
             onBlur={handleBlur}
             onChange={handleChange}
             onFocus={handleFocus}

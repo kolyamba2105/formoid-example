@@ -5,6 +5,7 @@ module.exports = {
   rules: {
     "prettier/prettier": "warn",
   },
+  ignorePatterns: ["webpack.config.ts"],
   overrides: [
     {
       files: ["*.js"],

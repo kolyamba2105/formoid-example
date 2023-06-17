@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --progress",
     "lint": "eslint --fix '*.js' './**/*.ts*'",
+    "postinstall": "yarn link formoid",
     "start": "NODE_ENV=development webpack serve --progress"
   },
   "dependencies": {

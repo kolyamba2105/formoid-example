@@ -1,4 +1,4 @@
-import { useFieldArray } from "formoid";
+import { useFieldArray, validator } from "formoid";
 import { Button, TextField } from "~/common/components";
 import { customValidator } from "~/common/utils";
 
@@ -11,8 +11,14 @@ export function WorkExperience() {
   const { append, groups, isSubmitting, remove, handleReset, handleSubmit } = useFieldArray({
     initialValues: [{ company: "", position: "" }] as Array<FormValues>,
     validationStrategy: "onBlur",
-    validators: () => ({
-      company: customValidator.nonBlankString(),
+    validators: (values) => ({
+      company: validator.sequence(
+        customValidator.nonBlankString(),
+        validator.fromPredicate(
+          (value) => values.filter(({ company }) => company === value).length === 1,
+          "This company has already been added",
+        ),
+      ),
       position: customValidator.nonBlankString(),
     }),
   });
@@ -21,7 +27,7 @@ export function WorkExperience() {
 
   const submit = () =>
     handleSubmit({
-      onSuccess: (values) => Promise.resolve(console.log(values)),
+      onSuccess: (values) => Promise.resolve(alert(JSON.stringify(values))),
       onFailure: () => alert("Some fields are not valid!"),
     });
 

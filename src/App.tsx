@@ -1,5 +1,5 @@
-import { SignUpForm } from "~/forms";
+import { WorkExperience } from "~/forms";
 
 export function App() {
-  return <SignUpForm />;
+  return <WorkExperience />;
 }

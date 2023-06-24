@@ -1,5 +1,5 @@
-import { WorkExperience } from "~/forms";
+import { JobApplication } from "~/forms";
 
 export function App() {
-  return <WorkExperience />;
+  return <JobApplication />;
 }

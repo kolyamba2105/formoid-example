@@ -9,6 +9,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import * as path from "path";
 import ReactRefreshTypeScript from "react-refresh-typescript";
 import { Configuration, RuleSetUse } from "webpack";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import "webpack-dev-server";
 
 const modes = ["development", "production"] as const;
@@ -103,11 +104,10 @@ export default {
     ],
   },
   optimization: {
+    concatenateModules: mode === "production",
     minimize: mode === "production",
     minimizer: [new CssMinimizerWebpackPlugin(), "..."],
-    /**
-     * TODO understand what's going on here :)
-     */
+    /* TODO understand what's going on here :) */
     splitChunks: {
       cacheGroups: {
         defaultVendors: {
@@ -130,25 +130,23 @@ export default {
     mode === "production" ? new MiniCssExtractPlugin() : null,
     mode === "production"
       ? new CopyWebpackPlugin({
-          patterns: [
-            {
-              from: "public",
-              /**
-               * Copy everything but index.html
-               */
-              filter: (path) => !path.endsWith("index.html"),
-            },
-          ],
-        })
+        patterns: [
+          {
+            from: "public",
+            /* Copy everything but index.html */
+            filter: (path) => !path.endsWith("index.html"),
+          },
+        ],
+      })
       : null,
-    /**
-     * Output TS errors in the console
-     */
+    /* Output TS errors in the console */
     mode === "development" ? new ForkTsCheckerWebpackPlugin() : null,
     mode === "development" ? new ReactRefreshWebpackPlugin({ overlay: true }) : null,
     mode === "development"
       ? new EsLintWebpackPlugin({ extensions: ["ts", "tsx"], failOnError: false, files: "./src" })
       : null,
+    /* Weird TS error here */
+    Boolean(process.env.ANALYZE) ? (new BundleAnalyzerPlugin() as never) : null,
   ]),
   resolve: {
     alias: {

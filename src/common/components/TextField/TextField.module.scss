@@ -40,8 +40,8 @@
 
 .input:disabled,
 .input.readOnly {
-  background-color: theme("colors.slate.100");
-  pointer-events: none;
+  background-color: theme("colors.gray.200");
+  cursor: not-allowed;
 }
 
 .error {

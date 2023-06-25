@@ -1,91 +1,110 @@
-import { useCompoundForm } from "formoid";
-import { useEffect } from "react";
+import { useCompoundForm, validator } from "formoid";
 import { TextField, Button } from "~/common/components";
-import { customValidator } from "~/common/utils";
+import { customValidator, pipe } from "~/common/utils";
 
 type General = {
   name: string;
   lastName: string;
 };
 
+const initialValues: General = { name: "", lastName: "" };
+
 type Experience = {
   company: string;
   position: string;
 };
 
-type Technologies = {
+const emptyExperience: Experience = { company: "", position: "" };
+
+type Technology = {
   name: string;
   years: string;
 };
 
+const emptyTechnology: Technology = { name: "", years: "" };
+
+function isElementUnique<T>(array: Array<T>, element: T) {
+  return array.indexOf(element) !== -1 && array.indexOf(element) === array.lastIndexOf(element);
+}
+
+function saveData<T>(data: T) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(console.log("Success", data)), 1000);
+  });
+}
+
+function SectionHeader({ children }: { children: string }) {
+  return (
+    <span className="block w-full border-b border-b-black pb-1 text-center text-xl">
+      {children}
+    </span>
+  );
+}
+
 export function JobApplication() {
-  const { form, fieldArray, handleSubmit, isSubmitting } = useCompoundForm({
+  const { form, fieldArray, handleReset, handleSubmit, isSubmitting } = useCompoundForm({
     form: {
-      initialValues: {
-        name: "",
-        lastName: "",
-      } satisfies General,
+      initialValues,
       validationStrategy: "onBlur",
       validators: () => ({
-        name: null,
-        lastName: null,
+        name: pipe(
+          customValidator.nonBlankString(),
+          validator.chain(validator.maxLength(32, "Name should be <= 32 chars long")),
+        ),
+        lastName: validator.sequence(
+          customValidator.nonBlankString(),
+          validator.maxLength(32, "Name should be <= 32 chars long"),
+        ),
       }),
     },
     fieldArray: {
       initialValues: {
-        experience: [{ company: "", position: "" }] as Array<Experience>,
-        technologies: [{ name: "", years: "" }] as Array<Technologies>,
+        experience: [emptyExperience],
+        technologies: [emptyTechnology],
       },
       validationStrategy: "onBlur",
-      validators: () => ({
+      validators: ({ fieldArray }) => ({
         experience: {
-          company: null,
+          company: customValidator.nonBlankString(),
           position: customValidator.nonBlankString(),
         },
         technologies: {
-          name: null,
-          years: null,
+          name: pipe(
+            customValidator.nonEmptyString(),
+            validator.chain(
+              validator.fromPredicate((value) => {
+                return isElementUnique(
+                  fieldArray.technologies.map(({ name }) => name),
+                  value,
+                );
+              }, "Please remove duplicates"),
+            ),
+          ),
+          years: customValidator.nonBlankString(),
         },
       }),
     },
   });
 
-  useEffect(() => console.log(fieldArray.technologies.errors), [fieldArray.technologies.errors]);
-
-  const reset = () => {
-    form.handleReset();
-    fieldArray.experience.handleReset();
-    fieldArray.technologies.handleReset();
-  };
-
   const submit = () =>
     handleSubmit({
-      onFailure: () => {
-        console.log({
-          general: form.errors,
-          experience: fieldArray.experience.errors,
-          technologies: fieldArray.technologies.errors,
-        });
+      onFailure: (errors) => {
+        console.log("Failure", errors);
       },
-      onSuccess: (values) => Promise.resolve(console.log(values)),
+      onSuccess: (values) => saveData(values),
     });
 
   return (
     <div className="mx-auto flex w-[600px] flex-col gap-4 py-4">
       <div className="flex w-full flex-col gap-4">
-        <span className="mx-auto text-xl">General information</span>
-
+        <SectionHeader>General information</SectionHeader>
         <div className="flex gap-4">
           <TextField {...form.fieldProps("name")} placeholder="Name" />
           <TextField {...form.fieldProps("lastName")} placeholder="Last name" />
         </div>
       </div>
-
-      <hr className="border-t-black" />
-
       <div className="flex w-full flex-col gap-4">
-        <span className="mx-auto text-xl">Experience</span>
-
+        <SectionHeader>Experience</SectionHeader>
         {fieldArray.experience.groups.map((group, index) => (
           <div className="flex gap-4" key={index}>
             <TextField {...group.company} placeholder="Company name" />
@@ -98,18 +117,12 @@ export function JobApplication() {
             </Button>
           </div>
         ))}
-        <Button
-          onClick={() => fieldArray.experience.append({ company: "", position: "" })}
-          type="button">
+        <Button onClick={() => fieldArray.experience.append(emptyExperience)} type="button">
           Add
         </Button>
       </div>
-
-      <hr className="border-t-black" />
-
       <div className="flex w-full flex-col gap-4">
-        <span className="mx-auto text-xl">Technologies</span>
-
+        <SectionHeader>Technologies</SectionHeader>
         {fieldArray.technologies.groups.map((group, index) => (
           <div className="flex gap-4" key={index}>
             <TextField {...group.name} placeholder="Name" />
@@ -122,15 +135,12 @@ export function JobApplication() {
             </Button>
           </div>
         ))}
-        <Button
-          onClick={() => fieldArray.technologies.append({ name: "", years: "" })}
-          type="button">
+        <Button onClick={() => fieldArray.technologies.append(emptyTechnology)} type="button">
           Add
         </Button>
       </div>
-
       <div className="flex items-center justify-end gap-4">
-        <Button color="danger" onClick={reset} type="reset">
+        <Button color="danger" onClick={handleReset} type="reset">
           Reset
         </Button>
         <Button

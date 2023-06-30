@@ -1,4 +1,4 @@
-import { useCompoundForm, validator } from "formoid";
+import { useCompositeForm, validator } from "formoid";
 import { TextField, Button } from "~/common/components";
 import { customValidator, pipe } from "~/common/utils";
 
@@ -42,7 +42,7 @@ function SectionHeader({ children }: { children: string }) {
 }
 
 export function JobApplication() {
-  const { form, fieldArray, handleReset, handleSubmit, isSubmitting } = useCompoundForm({
+  const { form, fieldArray, handleReset, handleSubmit, isSubmitting } = useCompositeForm({
     form: {
       initialValues,
       validationStrategy: "onBlur",
